@@ -11,7 +11,7 @@ HEROES: List[Hero] = [
         occupation=["Wizard", "Adventurer", "Deity"],
         powers=["Arcane magic proficiency", "Lute playing", "Charisma"],
         hobby=["Singing", "Having sex"],
-        type="Casanova",
+        type="Gana",
         rank=48
     ),
 

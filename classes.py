@@ -1,5 +1,5 @@
-from typing import List, Optional
-from pydantic import BaseModel, Field, constr
+from typing import List, Optional,Literal
+from pydantic import BaseModel, Field, constr, field_validator
 
 
 class Hero:
@@ -44,3 +44,29 @@ class HeroValidation(BaseModel):
         }
 
         }
+AllowedRoles = Literal["controller", "defender", "leader", "striker"]
+
+class PlayerValidation(BaseModel):
+    email: str = Field(description = "Email address")
+    username: str = Field(description = "Pseudo")
+    first_name: str = Field(description = "First name")
+    last_name: str = Field(description = "Family name")
+    password: str = Field(description = "Password")
+    role: AllowedRoles = Field(description = "Role of the player.Should be either controller,defander,leader or striker")
+    # PRE VALIDATION
+    @field_validator ("role", mode="before")
+    def lower_case_role(cls, val: str) -> str:
+        return val.lower()
+   # CUSTOMIZATION OF DISPLAYED INFOS IN SWAGGER MODEL
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "email": "maximis@gmail.com",
+                "username": "mali",
+                "first_name": "Maxi",
+                "last_name": "Maiga",
+                "password": "stromea",
+                "role": "controller"
+            }
+        }
+    }  
