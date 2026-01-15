@@ -18,4 +18,3 @@ async def register_players(db: Session = Depends(get_db), player_body: PlayerVal
     )
     db.add(new_player)
     db.commit()
-
