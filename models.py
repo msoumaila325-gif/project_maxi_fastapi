@@ -15,7 +15,7 @@ class Heroes(Base):
     rank = Column(Integer)
 
     
-class player(Base):
+class Players(Base):
     __tablename__ = "player"
     id = Column(Integer, autoincrement=True, index=True, primary_key=True)
     email = Column(String, unique=True)
