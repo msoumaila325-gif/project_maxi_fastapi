@@ -16,12 +16,12 @@ class Heroes(Base):
 
     
 class Players(Base):
-    __tablename__ = "player"
+    __tablename__ = "players"
     id = Column(Integer, autoincrement=True, index=True, primary_key=True)
     email = Column(String, unique=True)
     username = Column(String, unique=True)
     first_name = Column(String)
     last_name = Column(String, nullable=False)
-    hashed_password = Column(String)
+    hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     role = Column(String)
