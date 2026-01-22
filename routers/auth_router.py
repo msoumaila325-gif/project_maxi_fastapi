@@ -8,12 +8,17 @@ from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
-from fastapi import HTTPException
+from typing import Annotated
 
-router = APIRouter()  # minuscule
+router = APIRouter(
+    tags=["auth"],
+    prefix="/auth"
+)  # minuscule
+
+
 
 # BEARER TOKEN DEPENDENCY FOR THE ENOPOINT
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 # BCRYPT CONFIG
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -39,7 +44,7 @@ def create_token(username: str,user_id: int, expires_delta: timedelta):
 
 ##
 #FOR AUTH MIDDLEWARE
-async  def get_current_Player(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_Player(token: Annotated[str, Depends(oauth2_bearer) ]):
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALOD])
         username: str = payload.get("sub")
@@ -51,7 +56,7 @@ async  def get_current_Player(token: Annotated[str, Depends(oauth2_scheme)]):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 ##
 
-@router.post("/auth/register", status_code=status.HTTP_201_CREATED)
+@router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register_players(db: Session = Depends(get_db), player_body: PlayerValidation = Body()):
     new_player = Players(
         email=player_body.email,
@@ -68,10 +73,10 @@ async def register_players(db: Session = Depends(get_db), player_body: PlayerVal
         "status": "success",
         "message": "Utilisateur enregistré avec succès"
     }
-@router.post("/auth/login",response_model=Token, status_code=status.HTTP_200_OK)
+@router.post("/login",response_model=Token, status_code=status.HTTP_200_OK)
 async def login_player(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     Players_authenticated = authenticate_Player(db, form_data.username, form_data.password)
     if not Players_authenticated:
-        return "Arong credentials"
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     token = create_token(Players_authenticated.username, Players_authenticated.id, timedelta(minutes=30))
     return {"access_token": token, "token_type": "bearer"}

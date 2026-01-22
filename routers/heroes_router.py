@@ -12,12 +12,16 @@ from fastapi import Depends
 import models
 from models import Heroes
 
-router = APIRouter()  # minuscule
+router = APIRouter( # minuscule
+    tags=["heroes"],
+    prefix="/heroes"
+)
+# CREATE DATABASE
 
 models.Base.metadata.create_all(bind=engine)
 
 
-@router.get("/")
+@router.get("/heartbeat")
 def heartbeat(db: Session = Depends(get_db)):
     try:
         db.execute(text("SELECT 1"))
@@ -32,7 +36,7 @@ async def get_all_heroes(db: Session = Depends(get_db)):
 
 
 # GET BY TYPE (AS QUERY PARAM)
-@router.get("/heroes/type", status_code=status.HTTP_200_OK)
+@router.get("/type", status_code=status.HTTP_200_OK)
 async def get_all_heroes_by_type(db: Session = Depends(get_db), hero_type: Optional[str] = Query(None)):
     result = db.query(Heroes).filter(Heroes.type.ilike(f"%{hero_type}%")).all()
     return result
@@ -41,7 +45,7 @@ async def get_all_heroes_by_type(db: Session = Depends(get_db), hero_type: Optio
 # return CAN bo empty
 
 # GET BY RANK (AS QUERY PARAM)
-@router.get("/heroes/rank", status_code=status.HTTP_200_OK)
+@router.get("/rank", status_code=status.HTTP_200_OK)
 async def get_all_heroes_by_rank(db: Session = Depends(get_db), hero_rank: Optional[int] = Query(None, ge=0, le=100)):
     result = db.query(Heroes).filter(Heroes.rank >= hero_rank).all()
     return result
@@ -50,7 +54,7 @@ async def get_all_heroes_by_rank(db: Session = Depends(get_db), hero_rank: Optio
 # return CAN bo empty
 
 # GET ONE HERO BY ID (AS PATH PARAM)
-@router.get("/hero/id/{hero_id}", status_code=status.HTTP_200_OK)
+@router.get("/id/{hero_id}", status_code=status.HTTP_200_OK)
 async def get_one_hero_by_id(db: Session = Depends(get_db), hero_id: int = Path(ge=0, le=100)):
     hero_id = db.query(Heroes).filter(Heroes.id == hero_id).first()
     if hero_id is not None:
@@ -59,7 +63,7 @@ async def get_one_hero_by_id(db: Session = Depends(get_db), hero_id: int = Path(
 
 
 # GET ONE HERO BY NICkNANE
-@router.get("/hero/nick/{nick}", status_code=status.HTTP_200_OK)
+@router.get("/nick/{nick}", status_code=status.HTTP_200_OK)
 async def get_one_hero_by_nick(db: Session = Depends(get_db), nick: str = Path()):
     result = db.query(Heroes).filter(Heroes.nick_name.ilike(f"%{nick}%")).all()
     return result
@@ -69,7 +73,7 @@ async def get_one_hero_by_nick(db: Session = Depends(get_db), nick: str = Path()
 
 
 # Post/create (BY BODY)
-@router.post("/hero/create", status_code=status.HTTP_201_CREATED)
+@router.post("/create", status_code=status.HTTP_201_CREATED)
 async def create_hero(hero_body: HeroValidation = Body()):
     new_hero = Hero(**hero_body.model_dump())
 
@@ -78,7 +82,7 @@ async def create_hero(hero_body: HeroValidation = Body()):
 
 
 # UPDATE WITH PUT (BY BODY)
-@router.put("/hero/update/{hero_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/update/{hero_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_hero(db: Session = Depends(get_db), hero_id: int = Path(ge=1), hero_body: HeroValidation = Body()):
     hero_db = db.query(Heroes).filter(Heroes.id == hero_id).first()
     if hero_db is None:
@@ -97,7 +101,7 @@ async def update_hero(db: Session = Depends(get_db), hero_id: int = Path(ge=1), 
 
 # DELETE (BY ID AS PAHT PARAM)
 
-@router.delete("/hero/delete/{hero_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/delete/{hero_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_hero(db: Session = Depends(get_db), hero_id: int = Path(ge=0)):
     hero_db = db.query(Heroes).filter(Heroes.id == hero_id).first()
     if hero_db is not None:
