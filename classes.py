@@ -69,4 +69,7 @@ class PlayerValidation(BaseModel):
                 "role": "controller"
             }
         }
-    }  
+    }
+class Token(BaseModel):
+    access_token: str
+    token_type: str
