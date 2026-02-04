@@ -14,6 +14,7 @@ class Heroes(Base):
     type = Column(String)
     rank = Column(Integer)
 
+
     
 class Players(Base):
     __tablename__ = "players"
