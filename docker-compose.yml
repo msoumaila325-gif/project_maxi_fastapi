@@ -1,17 +1,16 @@
 services:
   postgres:
-    image: pgvector/pgvector:0.8.1-pg18-trixie
+    image: pgvector/pgvector:0.8.1-pg17-bookworm # Version stable avec pgvector
     container_name: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-      PGADMIN_LISTEN_ADDRESS: 0.0.0.0
     ports:
       - "5434:5432"
     volumes:
-      - pg_data:/var/lib/postgresql
-    restart: always  # Optionnel : pour s'assurer que le conteneur redémarre automatiquement
+      - pg_data:/var/lib/postgresql/data
+    restart: always
 
   pgadmin:
     image: dpage/pgadmin4
@@ -19,6 +18,7 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@gmail.com
       PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_LISTEN_ADDRESS: 0.0.0.0
     ports:
       - "8887:80"
     volumes:

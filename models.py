@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import ARRAY
 
 
@@ -13,6 +13,7 @@ class Heroes(Base):
     hobby = Column(ARRAY(String))
     type = Column(String)
     rank = Column(Integer)
+    owner_id = Column(Integer, ForeignKey("players.id"))
 
 
     
