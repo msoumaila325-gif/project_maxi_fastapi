@@ -89,7 +89,7 @@ HEROES: List[Hero] = [
     Hero(
         id=9,
         nick_name="Scanbo",
-        full_name={"Scanlan Shorthalt"},
+        full_name="Scanlan Shorthalt",
         occupation=["Wizard", "Adventurer", "Deity"],
         powers=["Arcane magic proficiency", "Lute playing", "Charisma"],
         hobby=["Singing", "Having sex"],
